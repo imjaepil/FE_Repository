@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>플로깅 시작 - 러닝 가이드</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      background: #f7f8fa;
+      min-width: 360px;
+      max-width: 430px;
+      margin-left: auto;
+      margin-right: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: #1a232b;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .top-bar {
+      padding: 32px 24px 16px 24px;
+      font-size: 24px;
+      font-weight: 700;
+      border-bottom: 2px solid #e5e7eb;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .back-btn {
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+      flex-shrink: 0;
+    }
+    .back-btn:hover {
+      background: #eee;
+    }
+    .back-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: #222;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .top-title {
+      font-size: 24px;
+      font-weight: 700;
+      user-select: none;
+    }
+    .content {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 0 24px 80px 24px;
+      user-select: none;
+    }
+    h2, h3 {
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #222;
+    }
+    p {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #444;
+      margin-bottom: 16px;
+    }
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+    ul li, ol li {
+      margin-bottom: 6px;
+    }
+    .highlight {
+      background-color: #fff4d9;
+      padding: 10px 14px;
+      border-left: 4px solid #f59e00;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .tip-box {
+      background: #eef6fb;
+      border-radius: 16px;
+      padding: 14px 20px;
+      box-shadow: 0 3px 9px rgba(0,123,255,0.15);
+      margin-bottom: 24px;
+      font-weight: 600;
+      color: #0366d6;
+    }
+    .image-container {
+      position: relative;
+      width: 100%;
+      border-radius: 22px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .image-container img {
+      width: 100%;
+      height: auto;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: none;
+      width: 430px;
+      background: #fff;
+      border-top: 1.5px solid #e5e7eb;
+      height: 53px;
+      z-index: 99;
+      display: flex;
+      user-select:none;
+    }
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      padding-top: 6px;
+      color: #000;
+      letter-spacing: -1px;
+      cursor: pointer;
+      text-decoration: none;
+      line-height: 53px;
+      transition: background 0.2s, color 0.2s;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .nav-item.active {
+      color: #000;
+      font-weight: 700;
+      background: #eef2f7;
+    }
+  </style>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="back-btn" role="button" tabindex="0" aria-label="뒤로가기" id="backBtn" title="뒤로가기">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+    </div>
+    <div class="top-title">러닝 가이드</div>
+  </header>
+
+  <main class="content" role="main" tabindex="0" aria-label="러닝 가이드 콘텐츠">
+    <section>
+      <h2>러닝 가이드에 오신 것을 환영합니다</h2>
+      <p>플로깅 러닝을 안전하고 즐겁게 하기 위해 꼭 알아야 할 내용과 꿀팁을 소개합니다.</p>
+      <div class="highlight">건강과 환경을 동시에 챙기는 최고의 운동법을 경험하세요!</div>
+    </section>
+
+    <section>
+      <h3>1. 시작 전 꼭 준비하세요</h3>
+      <ul>
+        <li>충분한 스트레칭으로 몸을 풀어주세요.</li>
+        <li>쿠션 좋은 러닝화를 착용해 무릎 부상 방지.</li>
+        <li>운동복은 땀 배출이 좋은 기능성 소재 선택.</li>
+        <li>밤에는 반드시 반사조끼와 조명을 꼭 챙기세요.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>2. 러닝 시 주의사항</h3>
+      <div class="tip-box">TIP: 항상 주변 환경을 주시하며 안전 우선!</div>
+      <ol>
+        <li>교통신호를 준수하며 인도나 안전한 도로에서 달리기.</li>
+        <li>과도한 속도나 무리한 달리기는 피하세요.</li>
+        <li>피로 시에는 운동을 중단하고 꼭 휴식을 취하세요.</li>
+        <li>친구와 함께 달리면 더 안전하고 즐거워요.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h3>3. 플로깅과 환경 보호</h3>
+      <p>플로깅은 쓰레기를 줍는 활동과 러닝을 결합하여 건강한 환경도 지켜주는 활동입니다.</p>
+      <div class="image-container" aria-label="플로깅하는 사람 이미지">
+        <img src="./imgs/img4.jpg" alt="플로깅을 하는 사람들" />
+      </div>
+      <ul>
+        <li>플라스틱, 금속캔, 종이 등 분리 배출 꼭 지키기.</li>
+        <li>쓰레기 봉투는 단단히 묶어 환경오염 예방하기.</li>
+        <li>자연 보호 구역에선 쓰레기 외 환경 훼손 주의.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>4. 목표 설정과 기록</h3>
+      <p>앱 내 목표 설정 기능 활용으로 동기 부여 및 달성도를 높이세요.</p>
+      <ul>
+        <li>일간, 주간, 월간 목표를 세워 꾸준함 유지.</li>
+        <li>달린 거리와 줍는 쓰레기 양을 기록하고 확인.</li>
+        <li>이루고 싶은 목표에 대한 간단한 메모도 활용 가능.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>5. 자주 묻는 질문(FAQ)</h3>
+      <details>
+        <summary>부상 없이 안전한 러닝 방법은?</summary>
+        <p>충분한 워밍업과 쿨다운, 무리하지 않는 페이스 조절이 중요합니다.</p>
+      </details>
+      <details>
+        <summary>밤에 러닝할 때 주의사항은?</summary>
+        <p>밝은 조명과 반사복을 착용하고 사람 많은 장소를 선택하세요.</p>
+      </details>
+      <details>
+        <summary>목표 달성은 어떻게 확인할 수 있나요?</summary>
+        <p>앱의 통계 페이지에서 실시간 목표 달성도를 확인할 수 있습니다.</p>
+      </details>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" role="navigation" aria-label="하단 내비게이션 바">
+    <a class="nav-item" href="index.html" tabindex="0">홈</a>
+    <a class="nav-item" href="stats.html" tabindex="0">통계</a>
+    <a class="nav-item" href="chat.html" tabindex="0">채팅</a>
+    <a class="nav-item" href="settings.html" tabindex="0">설정</a>
+  </nav>
+
+  <script>
+    // 뒤로가기 버튼 클릭, 키보드 접근성 처리
+    const backBtn = document.getElementById('backBtn');
+    backBtn.addEventListener('click', () => history.back());
+    backBtn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        history.back();
+      }
+    });
+
+    // FAQ 아코디언 하나만 열기
+    const detailsList = document.querySelectorAll('details');
+    detailsList.forEach(detail => {
+      detail.addEventListener('toggle', () => {
+        if(detail.open) {
+          detailsList.forEach(d => {
+            if(d !== detail && d.open) d.open = false;
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

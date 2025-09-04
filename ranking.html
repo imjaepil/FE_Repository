@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>플로깅 랭킹 보기</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0; background: #f7f8fa;
+      font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif;
+      color: #1a232b;
+      min-width: 360px;
+    }
+    .container {
+      max-width: 430px; min-width: 330px; margin: 0 auto;
+      padding-bottom: 120px;
+    }
+    .header {
+      padding: 32px 24px 16px 24px;
+      font-weight: 700;
+      font-size: 24px;
+      color: #222;
+      border-bottom: 2px solid #e3e7eb;
+      margin-bottom: 20px;
+      user-select: none;
+    }
+    .summary-stats {
+      display: flex;
+      justify-content: space-between;
+      margin: 0 24px 24px 24px;
+      background: #fff;
+      padding: 14px 20px;
+      border-radius: 18px;
+      box-shadow: 0 3px 15px rgba(20,30,60,0.1);
+      user-select: none;
+    }
+    .summary-item {
+      flex: 1;
+      text-align: center;
+      border-right: 1px solid #e3e7eb;
+      font-weight: 700;
+      color: #1a232b;
+      font-size: 18px;
+      padding: 0 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .summary-item:last-child {
+      border-right: none;
+    }
+    .summary-value {
+      font-size: 20px;
+      color: #000;
+      margin-bottom: 4px;
+    }
+    .summary-label {
+      font-weight: 400;
+      color: #8f97a3;
+      font-size: 13px;
+    }
+    .filter-section {
+      margin: 0 24px 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      background: #fff;
+      padding: 12px 18px;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(20,30,60,0.06);
+      user-select: none;
+      align-items: center;
+    }
+    .filter-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      line-height: 36px;
+    }
+    .filter-select {
+      border-radius: 12px;
+      border: 1.5px solid #ccc;
+      font-size: 16px;
+      padding: 6px 12px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.25s;
+    }
+    .filter-select:focus {
+      border-color: #000;
+    }
+    .ranking-card {
+      background: #fff; border-radius: 18px; box-shadow: 0 4px 18px rgba(20,30,60,0.1);
+      margin: 7px 24px 20px 24px; padding: 12px 0;
+      transition: box-shadow 0.3s;
+      overflow-y: auto;
+      max-height: 400px;
+    }
+    .ranking-card:hover {
+      box-shadow: 0 6px 30px rgba(20,30,60,0.15);
+    }
+    .rank-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px; border-bottom: 1px solid #e3e7eb; font-size: 17px; min-height: 52px;
+      transition: background 0.15s;
+      cursor: default;
+    }
+    .rank-row:hover {
+      background: #f0f4fb;
+    }
+    .rank-row:last-child { border-bottom: 0; }
+    .rank-left {
+      display: flex; align-items: center; gap: 14px;
+      flex: 1;
+    }
+    .medal {
+      width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800;
+      font-size: 20px;
+      user-select: none;
+      flex-shrink: 0;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .gold {
+      background: linear-gradient(135deg, #f5b000, #ffdb6d);
+      text-shadow: 0 0 5px #bf8e00;
+    }
+    .silver {
+      background: linear-gradient(135deg, #bfc0c1, #ececec);
+      color: #222;
+      text-shadow: none;
+    }
+    .bronze {
+      background: linear-gradient(135deg, #c89d67, #ecd09b);
+      color: #222;
+      text-shadow: none;
+    }
+    .gray-medal {
+      background: #cbd2d9;
+      color: #6d7280;
+      font-weight: 700;
+      font-size: 18px;
+      user-select: none;
+      box-shadow: none;
+    }
+    .city {
+      font-weight: 700;
+      font-size: 18px;
+      color: #1a232b;
+      min-width: 110px;
+      user-select: text;
+    }
+    .dist {
+      font-size: 14px;
+      color: #8f97a3;
+      margin-left: 8px;
+      font-weight: 600;
+      min-width: 80px;
+      user-select: text;
+    }
+    .rank-id {
+      font-weight: 700; color: #667;
+      font-size: 17px;
+      min-width: 54px;
+      text-align: right;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .btns {
+      display: grid;
+      gap: 12px;
+      margin: 26px 24px 0 24px;
+    }
+    .main-btn {
+      font-size: 19px;
+      border-radius: 15px;
+      font-weight: 700;
+      border: none;
+      padding: 18px 0;
+      cursor: pointer;
+      background: #000;
+      color: #fff;
+      transition: background 0.3s;
+      user-select: none;
+    }
+    .main-btn:hover {
+      background: #444;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: none;
+      width: 430px;
+      background: #fff;
+      border-top: 1.5px solid #e5e7eb;
+      height: 53px;
+      z-index: 99;
+      display: flex;
+    }
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      padding-top: 6px;
+      color: #000;
+      letter-spacing: -1px;
+      cursor: pointer;
+      text-decoration: none;
+      line-height: 53px;
+      transition: background 0.2s, color 0.2s;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .nav-item.active {
+      color: #000;
+      font-weight: 700;
+      background: #eef2f7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="플로깅 지역별 랭킹 보기 페이지">
+    <div class="header">지역별 플로깅 랭킹</div>
+
+    <div class="summary-stats" aria-label="전체 플로깅 통계 요약">
+      <div class="summary-item">
+        <div class="summary-value" id="totalRegions">--</div>
+        <div class="summary-label">참여 지역 수</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="totalDistance">-- km</div>
+        <div class="summary-label">누적 플로깅 거리</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="totalTrash">-- kg</div>
+        <div class="summary-label">수거한 쓰레기 양</div>
+      </div>
+    </div>
+
+    <div class="filter-section" aria-label="랭킹 필터 선택">
+      <label class="filter-label" for="regionFilter">지역별 필터:</label>
+      <select id="regionFilter" class="filter-select" aria-controls="rankingList" aria-label="지역별 랭킹 필터">
+        <option value="전체" selected>전체</option>
+        <option value="서울">서울</option>
+        <option value="부산">부산</option>
+        <option value="대구">대구</option>
+        <option value="인천">인천</option>
+        <option value="광주">광주</option>
+        <option value="대전">대전</option>
+        <option value="울산">울산</option>
+        <option value="세종">세종</option>
+        <option value="경기">경기</option>
+        <option value="강원">강원</option>
+        <option value="충북">충북</option>
+        <option value="충남">충남</option>
+        <option value="전북">전북</option>
+        <option value="전남">전남</option>
+        <option value="경북">경북</option>
+        <option value="경남">경남</option>
+        <option value="제주">제주</option>
+      </select>
+    </div>
+
+    <div class="ranking-card" id="rankingList" aria-live="polite" aria-relevant="additions" tabindex="0" role="list"></div>
+
+    <div class="btns">
+      <button class="main-btn" id="homeBtn" aria-label="홈페이지로 이동">홈으로 가기</button>
+      <button class="main-btn" id="refreshBtn" aria-label="랭킹 데이터 갱신">랭킹 갱신</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav" role="navigation" aria-label="하단 내비게이션 바">
+    <a href="index.html" class="nav-item" id="nav-home">홈</a>
+    <a href="stats.html" class="nav-item" id="nav-stats">통계</a>
+    <a href="chat.html" class="nav-item" id="nav-chat">채팅</a>
+    <a href="settings.html" class="nav-item" id="nav-settings">설정</a>
+  </nav>
+
+  <script>
+    (function() {
+      // 전체 통계 예시 데이터
+      const totalSummary = {
+        totalRegions: 25,
+        totalDistance: 330.5,
+        totalTrash: 90.1
+      };
+
+      let rankingData = [
+        // 전체
+        { city: '제주시', region: '전체', dist: 15.3, rankText: '1위', medal: 'gold', trashKg: 12.8 },
+        { city: '해운대구', region: '전체', dist: 14.8, rankText: '2위', medal: 'silver', trashKg: 11.5 },
+        { city: '강남구', region: '전체', dist: 15.2, rankText: '3위', medal: 'bronze', trashKg: 12 },
+        { city: '창원시', region: '전체', dist: 14.5, rankText: '4위', medal: '', trashKg: 13.0 },
+        { city: '서초구', region: '전체', dist: 14.5, rankText: '5위', medal: '', trashKg: 11 },
+        { city: '수원시', region: '전체', dist: 14.0, rankText: '6위', medal: '', trashKg: 12.3 },
+        { city: '포항시', region: '전체', dist: 14.0, rankText: '7위', medal: '', trashKg: 12.5 },
+        { city: '진주시', region: '전체', dist: 13.8, rankText: '8위', medal: '', trashKg: 12.2 },
+        { city: '송파구', region: '전체', dist: 13.9, rankText: '9위', medal: '', trashKg: 10 },
+        { city: '수성구', region: '전체', dist: 13.6, rankText: '10위', medal: '', trashKg: 10.5 },
+        { city: '서귀포시', region: '전체', dist: 13.7, rankText: '11위', medal: '', trashKg: 11.4 },
+        { city: '연수구', region: '전체', dist: 13.0, rankText: '12위', medal: '', trashKg: 10.8 },
+        { city: '김해시', region: '전체', dist: 13.0, rankText: '13위', medal: '', trashKg: 11.5 },
+        { city: '천안시', region: '전체', dist: 13.0, rankText: '14위', medal: '', trashKg: 11.5 },
+        { city: '남구', region: '전체', dist: 13.1, rankText: '15위', medal: '', trashKg: 10.9 },
+        { city: '목포시', region: '전체', dist: 13.1, rankText: '16위', medal: '', trashKg: 11.8 },
+        { city: '성남시', region: '전체', dist: 13.2, rankText: '17위', medal: '', trashKg: 10.8 },
+        { city: '중구', region: '전체', dist: 12.8, rankText: '18위', medal: '', trashKg: 9.7 },
+        { city: '마포구', region: '전체', dist: 12.8, rankText: '19위', medal: '', trashKg: 9.3 },
+        { city: '남동구', region: '전체', dist: 12.4, rankText: '20위', medal: '', trashKg: 10.2 },
+        // 서울
+        { city: '강남구', region: '서울', dist: 15.2, rankText: '1위', medal: 'gold', trashKg: 12 },
+        { city: '서초구', region: '서울', dist: 14.5, rankText: '2위', medal: 'silver', trashKg: 11 },
+        { city: '송파구', region: '서울', dist: 13.9, rankText: '3위', medal: 'bronze', trashKg: 10 },
+        { city: '마포구', region: '서울', dist: 12.8, rankText: '4위', medal: '', trashKg: 9.3 },
+        { city: '용산구', region: '서울', dist: 12.2, rankText: '5위', medal: '', trashKg: 8 },
+        { city: '광진구', region: '서울', dist: 10.2, rankText: '6위', medal: '', trashKg: 7.7 },
+        { city: '동작구', region: '서울', dist: 9.8, rankText: '7위', medal: '', trashKg: 7.4 },
+        { city: '성동구', region: '서울', dist: 9.6, rankText: '8위', medal: '', trashKg: 7.1 },
+        { city: '서대문구', region: '서울', dist: 8.5, rankText: '9위', medal: '', trashKg: 6.5 },
+        { city: '은평구', region: '서울', dist: 8.3, rankText: '10위', medal: '', trashKg: 6.3 },
+        { city: '중구', region: '서울', dist: 8.1, rankText: '11위', medal: '', trashKg: 6 },
+        { city: '노원구', region: '서울', dist: 7.7, rankText: '12위', medal: '', trashKg: 5.8 },
+        { city: '종로구', region: '서울', dist: 7.6, rankText: '13위', medal: '', trashKg: 5.7 },
+        { city: '강서구', region: '서울', dist: 7.3, rankText: '14위', medal: '', trashKg: 5.3 },
+        { city: '동대문구', region: '서울', dist: 7.0, rankText: '15위', medal: '', trashKg: 5 },
+        { city: '강북구', region: '서울', dist: 6.9, rankText: '16위', medal: '', trashKg: 4.9 },
+        { city: '양천구', region: '서울', dist: 6.3, rankText: '17위', medal: '', trashKg: 4.6 },
+        { city: '관악구', region: '서울', dist: 6.0, rankText: '18위', medal: '', trashKg: 4.2 },
+        { city: '성북구', region: '서울', dist: 5.7, rankText: '19위', medal: '', trashKg: 4 },
+        { city: '강동구', region: '서울', dist: 5.4, rankText: '20위', medal: '', trashKg: 3.7 },
+        { city: '금천구', region: '서울', dist: 5.2, rankText: '21위', medal: '', trashKg: 3.5 },
+        { city: '중랑구', region: '서울', dist: 4.8, rankText: '22위', medal: '', trashKg: 3 },
+        { city: '도봉구', region: '서울', dist: 4.5, rankText: '23위', medal: '', trashKg: 2.8 },
+        { city: '구로구', region: '서울', dist: 4.0, rankText: '24위', medal: '', trashKg: 2.6 },
+        { city: '양구구', region: '서울', dist: 3.5, rankText: '25위', medal: '', trashKg: 2.2 },
+        // 부산 
+        { city: '해운대구', region: '부산', dist: 14.8, rankText: '1위', medal: 'gold', trashKg: 11.5 },
+        { city: '남구', region: '부산', dist: 13.1, rankText: '2위', medal: 'silver', trashKg: 10.9 },
+        { city: '동래구', region: '부산', dist: 12.4, rankText: '3위', medal: 'bronze', trashKg: 9.8 },
+        { city: '부산진구', region: '부산', dist: 11.3, rankText: '4위', medal: '', trashKg: 8.7 },
+        { city: '수영구', region: '부산', dist: 10.9, rankText: '5위', medal: '', trashKg: 8.0 },
+        { city: '중구', region: '부산', dist: 10.7, rankText: '6위', medal: '', trashKg: 8.0 },
+        { city: '서구', region: '부산', dist: 9.9, rankText: '7위', medal: '', trashKg: 7.5 },
+        { city: '동구', region: '부산', dist: 9.7, rankText: '8위', medal: '', trashKg: 7.2 },
+        { city: '영도구', region: '부산', dist: 8.9, rankText: '9위', medal: '', trashKg: 6.9 },
+        { city: '북구', region: '부산', dist: 8.5, rankText: '10위', medal: '', trashKg: 6.7 },
+        { city: '사하구', region: '부산', dist: 7.9, rankText: '11위', medal: '', trashKg: 6.6 },
+        { city: '금정구', region: '부산', dist: 7.6, rankText: '12위', medal: '', trashKg: 5.4 },
+        { city: '강서구', region: '부산', dist: 7.6, rankText: '13위', medal: '', trashKg: 5.2 },
+        { city: '연제구', region: '부산', dist: 6.6, rankText: '14위', medal: '', trashKg: 5.1 },
+        { city: '사상구', region: '부산', dist: 6.4, rankText: '15위', medal: '', trashKg: 4.2 },
+        // 대구
+        { city: '수성구', region: '대구', dist: 13.6, rankText: '1위', medal: 'gold', trashKg: 10.5 },
+        { city: '중구', region: '대구', dist: 12.8, rankText: '2위', medal: 'silver', trashKg: 9.7 },
+        { city: '동구', region: '대구', dist: 11.7, rankText: '3위', medal: 'bronze', trashKg: 8.9 },
+        { city: '달서구', region: '대구', dist: 11.0, rankText: '4위', medal: '', trashKg: 8.3 },
+        { city: '북구', region: '대구', dist: 10.2, rankText: '5위', medal: '', trashKg: 7.6 },
+        { city: '서구', region: '대구', dist: 9.6, rankText: '6위', medal: '', trashKg: 7.2 },
+        { city: '남구', region: '대구', dist: 9.0, rankText: '7위', medal: '', trashKg: 6.8 },
+        { city: '달성군', region: '대구', dist: 8.4, rankText: '8위', medal: '', trashKg: 6.5 },
+        // 인천
+        { city: '연수구', region: '인천', dist: 13.0, rankText: '1위', medal: 'gold', trashKg: 10.8 },
+        { city: '남동구', region: '인천', dist: 12.4, rankText: '2위', medal: 'silver', trashKg: 10.2 },
+        { city: '부평구', region: '인천', dist: 11.3, rankText: '3위', medal: 'bronze', trashKg: 9.1 },
+        { city: '남구', region: '인천', dist: 10.5, rankText: '4위', medal: '', trashKg: 8.4 },
+        { city: '계양구', region: '인천', dist: 9.8, rankText: '5위', medal: '', trashKg: 7.9 },
+        { city: '중구', region: '인천', dist: 8.9, rankText: '6위', medal: '', trashKg: 7.4 },
+        { city: '동구', region: '인천', dist: 8.1, rankText: '7위', medal: '', trashKg: 6.9 },
+        { city: '강화군', region: '인천', dist: 7.5, rankText: '8위', medal: '', trashKg: 6.2 },
+        { city: '옹진군', region: '인천', dist: 6.9, rankText: '9위', medal: '', trashKg: 5.7 },
+        // 대전
+        { city: '유성구', region: '대전', dist: 11.7, rankText: '1위', medal: 'gold', trashKg: 9.4 },
+        { city: '서구', region: '대전', dist: 10.9, rankText: '2위', medal: 'silver', trashKg: 8.7 },
+        { city: '중구', region: '대전', dist: 10.2, rankText: '3위', medal: 'bronze', trashKg: 8.0 },
+        { city: '동구', region: '대전', dist: 9.6, rankText: '4위', medal: '', trashKg: 7.5 },
+        { city: '대덕구', region: '대전', dist: 8.8, rankText: '5위', medal: '', trashKg: 6.9 },
+        // 광주
+        { city: '북구', region: '광주', dist: 12.5, rankText: '1위', medal: 'gold', trashKg: 10.0 },
+        { city: '서구', region: '광주', dist: 11.8, rankText: '2위', medal: 'silver', trashKg: 9.3 },
+        { city: '남구', region: '광주', dist: 10.7, rankText: '3위', medal: 'bronze', trashKg: 8.5 },
+        { city: '동구', region: '광주', dist: 9.9, rankText: '4위', medal: '', trashKg: 8.0 },
+        { city: '광산구', region: '광주', dist: 9.0, rankText: '5위', medal: '', trashKg: 7.3 },
+        // 울산
+        { city: '남구', region: '울산', dist: 13.5, rankText: '1위', medal: 'gold', trashKg: 11.2 },
+        { city: '중구', region: '울산', dist: 12.3, rankText: '2위', medal: 'silver', trashKg: 10.5 },
+        { city: '동구', region: '울산', dist: 11.6, rankText: '3위', medal: 'bronze', trashKg: 9.8 },
+        { city: '북구', region: '울산', dist: 10.9, rankText: '4위', medal: '', trashKg: 8.9 },
+        { city: '울주군', region: '울산', dist: 10.3, rankText: '5위', medal: '', trashKg: 8.2 },
+        // 세종
+        { city: '세종특별자치시', region: '세종', dist: 9.3, rankText: '1위', medal: 'gold', trashKg: 7.1 },
+        // 경기
+        { city: '수원시', region: '경기', dist: 14.0, rankText: '1위', medal: 'gold', trashKg: 12.3 },
+        { city: '성남시', region: '경기', dist: 13.2, rankText: '2위', medal: 'silver', trashKg: 10.8 },
+        { city: '용인시', region: '경기', dist: 12.1, rankText: '3위', medal: 'bronze', trashKg: 9.6 },
+        { city: '고양시', region: '경기', dist: 11.5, rankText: '4위', medal: '', trashKg: 9.0 },
+        { city: '화성시', region: '경기', dist: 10.8, rankText: '5위', medal: '', trashKg: 8.4 },
+        { city: '남양주시', region: '경기', dist: 10.0, rankText: '6위', medal: '', trashKg: 7.7 },
+        { city: '부천시', region: '경기', dist: 9.5, rankText: '7위', medal: '', trashKg: 7.1 },
+        { city: '평택시', region: '경기', dist: 9.0, rankText: '8위', medal: '', trashKg: 6.5 },
+        { city: '안산시', region: '경기', dist: 8.5, rankText: '9위', medal: '', trashKg: 6.2 },
+        { city: '의정부시', region: '경기', dist: 8.0, rankText: '10위', medal: '', trashKg: 5.8 },
+        { city: '시흥시', region: '경기', dist: 7.6, rankText: '11위', medal: '', trashKg: 5.4 },
+        { city: '파주시', region: '경기', dist: 7.3, rankText: '12위', medal: '', trashKg: 5.1 },
+        { city: '광명시', region: '경기', dist: 6.9, rankText: '13위', medal: '', trashKg: 4.7 },
+        { city: '김포시', region: '경기', dist: 6.6, rankText: '14위', medal: '', trashKg: 4.4 },
+        { city: '광주시', region: '경기', dist: 6.2, rankText: '15위', medal: '', trashKg: 4.0 },
+        { city: '오산시', region: '경기', dist: 5.9, rankText: '16위', medal: '', trashKg: 3.8 },
+        { city: '구리시', region: '경기', dist: 5.7, rankText: '17위', medal: '', trashKg: 3.5 },
+        { city: '안성시', region: '경기', dist: 5.4, rankText: '18위', medal: '', trashKg: 3.3 },
+        { city: '하남시', region: '경기', dist: 5.1, rankText: '19위', medal: '', trashKg: 3.0 },
+        { city: '여주시', region: '경기', dist: 4.8, rankText: '20위', medal: '', trashKg: 2.8 },
+        // 강원
+        { city: '춘천시', region: '강원', dist: 10.2, rankText: '1위', medal: 'gold', trashKg: 8.5 },
+        { city: '원주시', region: '강원', dist: 9.5, rankText: '2위', medal: 'silver', trashKg: 7.8 },
+        { city: '강릉시', region: '강원', dist: 8.7, rankText: '3위', medal: 'bronze', trashKg: 7.0 },
+        { city: '동해시', region: '강원', dist: 7.9, rankText: '4위', medal: '', trashKg: 6.4 },
+        { city: '태백시', region: '강원', dist: 7.2, rankText: '5위', medal: '', trashKg: 5.8 },
+        { city: '속초시', region: '강원', dist: 6.8, rankText: '6위', medal: '', trashKg: 5.3 },
+        { city: '삼척시', region: '강원', dist: 6.4, rankText: '7위', medal: '', trashKg: 5.0 },
+        // 충북 
+        { city: '청주시', region: '충북', dist: 11.4, rankText: '1위', medal: 'gold', trashKg: 9.7 },
+        { city: '충주시', region: '충북', dist: 10.7, rankText: '2위', medal: 'silver', trashKg: 9.0 },
+        { city: '제천시', region: '충북', dist: 10.0, rankText: '3위', medal: 'bronze', trashKg: 8.3 },
+        { city: '보은군', region: '충북', dist: 9.3, rankText: '4위', medal: '', trashKg: 7.6 },
+        { city: '옥천군', region: '충북', dist: 8.6, rankText: '5위', medal: '', trashKg: 7.0 },
+        { city: '영동군', region: '충북', dist: 8.0, rankText: '6위', medal: '', trashKg: 6.4 },
+        { city: '증평군', region: '충북', dist: 7.3, rankText: '7위', medal: '', trashKg: 5.8 },
+        { city: '진천군', region: '충북', dist: 6.9, rankText: '8위', medal: '', trashKg: 5.3 },
+        { city: '괴산군', region: '충북', dist: 6.0, rankText: '9위', medal: '', trashKg: 4.9 },
+        { city: '음성군', region: '충북', dist: 5.7, rankText: '10위', medal: '', trashKg: 4.6 },
+        { city: '단양군', region: '충북', dist: 5.0, rankText: '11위', medal: '', trashKg: 4.0 },
+        // 충남
+        { city: '천안시', region: '충남', dist: 13.0, rankText: '1위', medal: 'gold', trashKg: 11.5 },
+        { city: '아산시', region: '충남', dist: 12.2, rankText: '2위', medal: 'silver', trashKg: 10.8 },
+        { city: '서산시', region: '충남', dist: 11.4, rankText: '3위', medal: 'bronze', trashKg: 9.9 },
+        { city: '논산시', region: '충남', dist: 10.6, rankText: '4위', medal: '', trashKg: 9.2 },
+        { city: '계룡시', region: '충남', dist: 9.9, rankText: '5위', medal: '', trashKg: 8.5 },
+        { city: '당진시', region: '충남', dist: 9.1, rankText: '6위', medal: '', trashKg: 7.6 },
+        { city: '금산군', region: '충남', dist: 7.5, rankText: '7위', medal: '', trashKg: 6.9 },
+        { city: '부여군', region: '충남', dist: 7.0, rankText: '8위', medal: '', trashKg: 6.5 },
+        { city: '서천군', region: '충남', dist: 6.8, rankText: '9위', medal: '', trashKg: 6.1 },
+        { city: '홍성군', region: '충남', dist: 6.5, rankText: '10위', medal: '', trashKg: 5.9 },
+        { city: '예산군', region: '충남', dist: 5.9, rankText: '11위', medal: '', trashKg: 5.1 },
+        { city: '태안군', region: '충남', dist: 5.6, rankText: '12위', medal: '', trashKg: 4.8 },
+        // 전북
+        { city: '전주시', region: '전북', dist: 12.5, rankText: '1위', medal: 'gold', trashKg: 11.0 },
+        { city: '익산시', region: '전북', dist: 11.7, rankText: '2위', medal: 'silver', trashKg: 10.3 },
+        { city: '군산시', region: '전북', dist: 10.9, rankText: '3위', medal: 'bronze', trashKg: 9.6 },
+        { city: '정읍시', region: '전북', dist: 10.2, rankText: '4위', medal: '', trashKg: 8.8 },
+        { city: '남원시', region: '전북', dist: 9.5, rankText: '5위', medal: '', trashKg: 8.2 },
+        { city: '김제시', region: '전북', dist: 8.7, rankText: '6위', medal: '', trashKg: 7.4 },
+        { city: '완주군', region: '전북', dist: 8.3, rankText: '7위', medal: '', trashKg: 7.0 },
+        { city: '진안군', region: '전북', dist: 7.5, rankText: '8위', medal: '', trashKg: 6.2 },
+        { city: '무주군', region: '전북', dist: 7.1, rankText: '9위', medal: '', trashKg: 5.7 },
+        { city: '장수군', region: '전북', dist: 6.8, rankText: '10위', medal: '', trashKg: 5.3 },
+        { city: '임실군', region: '전북', dist: 6.5, rankText: '11위', medal: '', trashKg: 5.0 },
+        { city: '순창군', region: '전북', dist: 6.2, rankText: '12위', medal: '', trashKg: 4.8 },
+        { city: '고창군', region: '전북', dist: 5.8, rankText: '13위', medal: '', trashKg: 4.3 },
+        { city: '부안군', region: '전북', dist: 5.3, rankText: '14위', medal: '', trashKg: 4.0 },
+        // 전남
+        { city: '목포시', region: '전남', dist: 13.1, rankText: '1위', medal: 'gold', trashKg: 11.8 },
+        { city: '여수시', region: '전남', dist: 12.3, rankText: '2위', medal: 'silver', trashKg: 11.0 },
+        { city: '순천시', region: '전남', dist: 11.6, rankText: '3위', medal: 'bronze', trashKg: 10.2 },
+        { city: '광양시', region: '전남', dist: 10.9, rankText: '4위', medal: '', trashKg: 9.5 },
+        { city: '나주시', region: '전남', dist: 10.1, rankText: '5위', medal: '', trashKg: 8.7 },
+        { city: '강진군', region: '전남', dist: 9.8, rankText: '6위', medal: '', trashKg: 8.3 },
+        { city: '해남군', region: '전남', dist: 9.4, rankText: '7위', medal: '', trashKg: 7.9 },
+        { city: '영암군', region: '전남', dist: 8.9, rankText: '8위', medal: '', trashKg: 7.5 },
+        { city: '무안군', region: '전남', dist: 8.5, rankText: '9위', medal: '', trashKg: 7.1 },
+        { city: '함평군', region: '전남', dist: 8.1, rankText: '10위', medal: '', trashKg: 6.8 },
+        { city: '영광군', region: '전남', dist: 7.9, rankText: '11위', medal: '', trashKg: 6.5 },
+        { city: '장성군', region: '전남', dist: 7.4, rankText: '12위', medal: '', trashKg: 6.1 },
+        { city: '강화군', region: '전남', dist: 7.0, rankText: '13위', medal: '', trashKg: 5.8 },
+        { city: '진도군', region: '전남', dist: 6.7, rankText: '14위', medal: '', trashKg: 5.3 },
+        { city: '신안군', region: '전남', dist: 6.3, rankText: '15위', medal: '', trashKg: 5.0 },
+        // 경북
+        { city: '포항시', region: '경북', dist: 14.0, rankText: '1위', medal: 'gold', trashKg: 12.5 },
+        { city: '안동시', region: '경북', dist: 13.2, rankText: '2위', medal: 'silver', trashKg: 11.8 },
+        { city: '경주시', region: '경북', dist: 12.5, rankText: '3위', medal: 'bronze', trashKg: 10.9 },
+        { city: '구미시', region: '경북', dist: 11.7, rankText: '4위', medal: '', trashKg: 10.2 },
+        { city: '영주시', region: '경북', dist: 10.9, rankText: '5위', medal: '', trashKg: 9.5 },
+        { city: '문경시', region: '경북', dist: 10.3, rankText: '6위', medal: '', trashKg: 8.9 },
+        { city: '상주시', region: '경북', dist: 9.8, rankText: '7위', medal: '', trashKg: 8.5 },
+        { city: '경산시', region: '경북', dist: 9.2, rankText: '8위', medal: '', trashKg: 8.0 },
+        { city: '청송군', region: '경북', dist: 8.7, rankText: '9위', medal: '', trashKg: 7.6 },
+        { city: '영천시', region: '경북', dist: 8.3, rankText: '10위', medal: '', trashKg: 7.2 },
+        { city: '김천시', region: '경북', dist: 7.9, rankText: '11위', medal: '', trashKg: 6.9 },
+        { city: '봉화군', region: '경북', dist: 7.4, rankText: '12위', medal: '', trashKg: 6.4 },
+        { city: '예천군', region: '경북', dist: 7.0, rankText: '13위', medal: '', trashKg: 6.1 },
+        { city: '울진군', region: '경북', dist: 6.7, rankText: '14위', medal: '', trashKg: 5.8 },
+        { city: '울릉군', region: '경북', dist: 5.9, rankText: '15위', medal: '', trashKg: 5.1 },
+        // 경남
+        { city: '창원시', region: '경남', dist: 14.5, rankText: '1위', medal: 'gold', trashKg: 13.0 },
+        { city: '진주시', region: '경남', dist: 13.8, rankText: '2위', medal: 'silver', trashKg: 12.2 },
+        { city: '김해시', region: '경남', dist: 13.0, rankText: '3위', medal: 'bronze', trashKg: 11.5 },
+        { city: '양산시', region: '경남', dist: 12.3, rankText: '4위', medal: '', trashKg: 10.7 },
+        { city: '거제시', region: '경남', dist: 11.5, rankText: '5위', medal: '', trashKg: 10.0 },
+        { city: '통영시', region: '경남', dist: 10.8, rankText: '6위', medal: '', trashKg: 9.4 },
+        { city: '사천시', region: '경남', dist: 10.3, rankText: '7위', medal: '', trashKg: 8.9 },
+        { city: '밀양시', region: '경남', dist: 9.8, rankText: '8위', medal: '', trashKg: 8.5 },
+        { city: '함안군', region: '경남', dist: 9.3, rankText: '9위', medal: '', trashKg: 8.0 },
+        { city: '창녕군', region: '경남', dist: 8.7, rankText: '10위', medal: '', trashKg: 7.6 },
+        { city: '고성군', region: '경남', dist: 8.4, rankText: '11위', medal: '', trashKg: 7.3 },
+        { city: '하동군', region: '경남', dist: 7.9, rankText: '12위', medal: '', trashKg: 6.9 },
+        { city: '산청군', region: '경남', dist: 7.5, rankText: '13위', medal: '', trashKg: 6.5 },
+        { city: '거창군', region: '경남', dist: 7.1, rankText: '14위', medal: '', trashKg: 6.1 },
+        { city: '합천군', region: '경남', dist: 6.8, rankText: '15위', medal: '', trashKg: 5.8 },
+        // 제주
+        { city: '제주시', region: '제주', dist: 15.3, rankText: '1위', medal: 'gold', trashKg: 12.8 },
+        { city: '서귀포시', region: '제주', dist: 13.7, rankText: '2위', medal: 'silver', trashKg: 11.4 }
+        ];
+
+        
+
+      // 통계 요약 표시
+      document.getElementById('totalRegions').textContent = totalSummary.totalRegions;
+      document.getElementById('totalDistance').textContent = totalSummary.totalDistance.toFixed(1) + ' km';
+      document.getElementById('totalTrash').textContent = totalSummary.totalTrash.toFixed(1) + ' kg';
+
+      // 랭킹 리스트 렌더링 함수
+      function renderRanking(filterRegion = '서울') {
+        const rankingList = document.getElementById('rankingList');
+        rankingList.innerHTML = '';
+
+        const filtered = filterRegion === 'all' ? rankingData : rankingData.filter(item => item.region === filterRegion);
+
+        if(filtered.length === 0) {
+          rankingList.innerHTML = '<div style="padding:24px; text-align:center; color:#999;">해당 지역의 데이터가 없습니다.</div>';
+          return;
+        }
+
+        filtered.forEach((item, idx) => {
+          const rankRow = document.createElement('div');
+          rankRow.className = 'rank-row';
+
+          let medalClass = '';
+          let medalContent = idx + 1;
+          if(item.medal === 'gold') medalClass = 'gold';
+          else if(item.medal === 'silver') medalClass = 'silver';
+          else if(item.medal === 'bronze') medalClass = 'bronze';
+          else medalClass = 'gray-medal';
+
+          rankRow.innerHTML = `
+            <span class="rank-left">
+              <span class="medal ${medalClass}">${medalContent}</span>
+              <span class="city">${item.city}</span>
+              <span class="dist">${item.dist.toFixed(1)} km</span>
+            </span>
+            <span class="rank-id">${item.rankText}</span>
+          `;
+          rankingList.appendChild(rankRow);
+        });
+      }
+
+      const regionSummary = {
+  전체: {
+    totalRegions: 173,   // 기존 140에서 전체 시군 합산 후 수정
+    totalDistance: 1350.4, // 기존 1073.8보다 증가한 거리 합산값
+    totalTrash: 1207.9,    // 기존 956.4보다 증가한 쓰레기 양 합산값
+  },
+  서울: {
+    totalRegions: 25,
+    totalDistance: 223.3,
+    totalTrash: 161.1,
+  },
+  부산: {
+    totalRegions: 15,
+    totalDistance: 147.4,
+    totalTrash: 109.3,
+  },
+  대구: {
+    totalRegions: 8,
+    totalDistance: 81.2,
+    totalTrash: 61.5,
+  },
+  인천: {
+    totalRegions: 9,
+    totalDistance: 89.0,
+    totalTrash: 65.5,
+  },
+  대전: {
+    totalRegions: 5,
+    totalDistance: 50.2,
+    totalTrash: 40.5,
+  },
+  광주: {
+    totalRegions: 5,
+    totalDistance: 54.9,
+    totalTrash: 43.1,
+  },
+  울산: {
+    totalRegions: 5,
+    totalDistance: 59.3,
+    totalTrash: 48.6,
+  },
+  세종: {
+    totalRegions: 1,
+    totalDistance: 9.3,
+    totalTrash: 7.1,
+  },
+  경기: {
+    totalRegions: 20,
+    totalDistance: 200.9,
+    totalTrash: 156.7,
+  },
+  강원: {
+    totalRegions: 7,
+    totalDistance: 57.7,
+    totalTrash: 40.9,
+  },
+  충북: {
+    totalRegions: 11,
+    totalDistance: 80.2,
+    totalTrash: 65.8,
+  },
+  충남: {
+    totalRegions: 12,
+    totalDistance: 109.4,
+    totalTrash: 100.1,
+  },
+  전북: {
+    totalRegions: 14,
+    totalDistance: 119.5,
+    totalTrash: 102.0,
+  },
+  전남: {
+    totalRegions: 15,
+    totalDistance: 132.1,
+    totalTrash: 116.0,
+  },
+  경북: {
+    totalRegions: 15,
+    totalDistance: 124.9,
+    totalTrash: 110.4,
+  },
+  경남: {
+    totalRegions: 15,
+    totalDistance: 128.7,
+    totalTrash: 117.9,
+  },
+  제주: {
+    totalRegions: 2,
+    totalDistance: 29.0,
+    totalTrash: 24.2,
+  }
+};
+
+// 통계 업데이트 함수
+function updateSummary(region) {
+  const summary = regionSummary[region] || { totalRegions: 0, totalDistance: 0, totalTrash: 0 };
+  document.getElementById('totalRegions').textContent = summary.totalRegions;
+  document.getElementById('totalDistance').innerHTML = summary.totalDistance.toFixed(1) + ' <span style="font-size:14px; color:#666;">km</span>';
+  document.getElementById('totalTrash').innerHTML = summary.totalTrash.toFixed(1) + ' <span style="font-size:14px; color:#666;">kg</span>';
+}
+
+// 랭킹 리스트 렌더링 함수
+function renderRanking(filterRegion) {
+  const rankingList = document.getElementById('rankingList');
+  rankingList.innerHTML = '';
+
+  let filtered;
+  if(filterRegion === '전체') {
+    // 전체일 때는 rankingData에서 region === '전체'인 20개만 보여줌
+    filtered = rankingData.filter(item => item.region === '전체');
+  } else {
+    filtered = rankingData.filter(item => item.region === filterRegion);
+  }
+
+  if(filtered.length === 0) {
+    rankingList.innerHTML = '<div style="padding:24px; text-align:center; color:#999;">해당 지역의 데이터가 없습니다.</div>';
+    return;
+  }
+
+  filtered.forEach((item, idx) => {
+    const rankRow = document.createElement('div');
+    rankRow.className = 'rank-row';
+
+    let medalClass = '';
+    if(item.medal === 'gold') medalClass = 'gold';
+    else if(item.medal === 'silver') medalClass = 'silver';
+    else if(item.medal === 'bronze') medalClass = 'bronze';
+    else medalClass = 'gray-medal';
+
+        rankRow.innerHTML = `
+        <span class="rank-left">
+            <span class="medal ${medalClass}">${idx + 1}</span>
+            <span class="city">${item.city}</span>
+            <span class="dist">${item.dist.toFixed(1)} km</span>
+        </span>
+        <span class="rank-id">${item.rankText}</span>
+    `   ;
+        rankingList.appendChild(rankRow);
+    });
+    }
+
+    // 필터 선택 이벤트 처리 예시
+    const regionSelect = document.getElementById('regionFilter');
+    regionSelect.value = '전체'; // 초기값 전체
+    renderRanking('전체');
+    updateSummary('전체');
+
+        regionSelect.addEventListener('change', e => {
+        const selected = e.target.value;
+        renderRanking(selected);
+        updateSummary(selected);
+        });
+     document.getElementById('homeBtn').addEventListener('click', () => {
+   window.location.href = 'index.html';
+  });
+
+  document.getElementById('refreshBtn').addEventListener('click', () => {
+    alert('랭킹 데이터가 갱신되었습니다.');
+   const regionSelect = document.getElementById('regionFilter');
+   renderRanking(regionSelect.value);
+   updateSummary(regionSelect.value);
+  });
+    
+    })();
+  </script>
+</body>
+</html>
