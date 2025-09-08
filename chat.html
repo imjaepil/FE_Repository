@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>플로깅 채팅</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      background: #f7f8fa;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      color: #1a232b;
+      min-width: 360px;
+    }
+    .container {
+      max-width: 430px;
+      min-width: 330px;
+      margin: 0 auto;
+      padding-bottom: 80px;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 16px 12px 16px;
+      border-bottom: 1px solid #ededed;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .top-title {
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .top-profile {
+      background: #fff;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .top-profile svg {
+      width: 20px;
+      height: 20px;
+      color: #222;
+    }
+    .chat-list {
+      margin: 12px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-item {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 2px 8px rgba(20,30,60,0.07);
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .chat-item:hover {
+      background: #eef2f7;
+    }
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%; /* 동그랗게 만들기 */
+      overflow: hidden;   /* 모서리 자르기 */
+      margin-right: 14px;
+      flex-shrink: 0;
+      background: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #fff;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .chat-info {
+      flex: 1;
+    }
+    .chat-name {
+      font-weight: 700;
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+    .chat-last-message {
+      font-size: 14px;
+      color: #656565;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chat-time {
+      font-size: 12px;
+      color: #a4a7a9;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+    .new-message-btn {
+      position: fixed;
+      bottom: 70px;
+      right: 24px;
+      background: #000;
+      color: #fff;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 28px;
+      font-weight: 700;
+      border: none;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: background 0.2s;
+    }
+    .new-message-btn:hover {
+      background: #444;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 430px;
+      width: 100vw;
+      background: #fff;
+      border-top: 1.5px solid #e5e7eb;
+      height: 53px;
+      z-index: 99;
+      display: flex;
+    }
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      padding-top: 6px;
+      color: #000;
+      letter-spacing: -1px;
+      cursor: pointer;
+      text-decoration: none;
+      line-height: 53px;
+      transition: background 0.15s, color 0.15s;
+      box-sizing: border-box;
+    }
+    .nav-item.active {
+      color: #000;
+      font-weight: 700;
+      background: #eef2f7;
+    }
+  </style>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div class="top-title">플로깅 채팅</div>
+      <div class="top-profile" title="내 프로필">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8.5" r="4.5" stroke="#444" stroke-width="1.8"/>
+          <path d="M5 20c0-3.2 2.8-5 7-5s7 1.8 7 5" stroke="#444" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="chat-list">
+      <div class="chat-item" tabindex="0" onclick="location.href='chat_haneul.html'">
+        <div class="avatar">
+          <img src="imgs/img0.jpg" alt="찬우 사진" />
+        </div>
+        <div class="chat-info">
+          <div class="chat-name">찬우</div>
+          <div class="chat-last-message">이번 주 토요일 같이 플로깅할 사람?</div>
+        </div>
+        <div class="chat-time">12:18</div>
+      </div>
+      <div class="chat-item" tabindex="0" onclick="location.href='chat_jimin.html'">
+        <div class="avatar">
+          <img src="imgs/img1.png" alt="지민이 사진">
+        </div>
+        <div class="chat-info">
+          <div class="chat-name">지민이</div>
+          <div class="chat-last-message">저번에 줍줍한 쓰레기 사진 공유해요!</div>
+        </div>
+        <div class="chat-time">어제</div>
+      </div>
+      <div class="chat-item" tabindex="0" onclick="location.href='chat_bada.html'">
+        <div class="avatar">
+          <img src="imgs/img2.png" alt="바다 사진">
+        </div>
+        <div class="chat-info">
+          <div class="chat-name">바다</div>
+          <div class="chat-last-message">다음 플로깅 데이트 기대돼요 :)</div>
+        </div>
+        <div class="chat-time">9/1</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="new-message-btn" title="새 메시지">
+    <i class="ri-chat-1-line" style="pointer-events:none;"></i>
+  </button>
+
+  <div class="bottom-nav">
+    <a class="nav-item" href="index.html">홈</a>
+    <a class="nav-item" href="stats.html">통계</a>
+    <a class="nav-item active" href="chat.html">채팅</a>
+    <a class="nav-item" href="settings.html">설정</a>
+  </div>
+</body>
+</html>

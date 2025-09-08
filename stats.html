@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>플로깅 통계</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      margin: 0;
+      background: #fff;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #1a232b;
+      min-width: 360px;
+    }
+    .container {
+      max-width: 430px;
+      min-width: 330px;
+      margin: 0 auto;
+      padding-bottom: 100px;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 19px 16px 12px 16px;
+      border-bottom: 1px solid #ededed;
+    }
+    .top-title {
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .top-title-arrow {
+      font-size: 17px;
+      margin-left: 2px;
+      font-weight: 400;
+      vertical-align: 2px;
+    }
+    .top-profile {
+      background: #fff;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .top-profile svg {
+      width: 20px;
+      height: 20px;
+      color: #222;
+    }
+    .chips-row {
+      margin: 18px 0 14px 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .chip {
+      display: inline-block;
+      background: #f5f5f7;
+      border: none;
+      border-radius: 14px;
+      color: #222;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 7px 14px;
+      margin-right: 6px;
+      margin-bottom: 5px;
+      cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+      text-decoration: none;
+    }
+    .chip.active,
+    .chip:hover,
+    .chip:focus {
+      background: #1a232b;
+      color: #fff;
+      outline: none;
+    }
+    .stats-area {
+      margin: 18px 13px 0 13px;
+      display: flex;
+      flex-direction: column;
+    }
+    .my-page-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .my-page-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 7px;
+      margin-top: 2px;
+    }
+    .my-page-sub {
+      font-size: 13px;
+      color: #767676;
+      font-weight: 400;
+      margin-left: 5px;
+    }
+    .stat-detail-btn {
+      border: 1px solid #222;
+      background: #fff;
+      color: #222;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 4px 14px 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      outline: none;
+      transition: none;
+      letter-spacing: -1px;
+      text-decoration: none;
+    }
+    .stat-detail-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #222;
+      stroke-width: 2.2;
+      display: inline-block;
+      transform: translateY(1px);
+    }
+    .stat-cards-row {
+      display: flex;
+      gap: 13px;
+      margin-top: 16px;
+    }
+    .stat-card {
+      flex: 1;
+      border: 1.2px solid #eee;
+      border-radius: 13px;
+      background: #fff;
+      padding: 14px 0 11px 0;
+      box-sizing: border-box;
+      text-align: center;
+      min-width: 0;
+    }
+    .stat-card-label {
+      font-size: 13px;
+      color: #6b6b6b;
+    }
+    .stat-card-value {
+      font-size: 21px;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+    .date-selectors {
+      margin: 20px 13px 10px;
+      display: flex;
+      justify-content: center;
+    }
+    .date-selectors input[type="date"] {
+      font-size: 15px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1.2px solid #ccc;
+      cursor: pointer;
+      user-select: none;
+    }
+    .map-display {
+      margin: 10px 14px 16px;
+      height: 250px;
+      background: #d3dee5;
+      border-radius: 22px;
+      box-shadow: inset 0 0 10px #9ab4c1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #666;
+      font-size: 18px;
+      user-select: none;
+    }
+    .records-list {
+      margin: 12px 13px 0;
+      max-height: 300px;
+      overflow-y: auto;
+      border-top: 1px solid #ccc;
+    }
+    .record-item {
+      padding: 14px 18px;
+      background: #fff;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(50, 60, 100, 0.1);
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      border: 1px solid transparent;
+    }
+    .record-item:hover,
+    .record-item:focus {
+      background-color: #e6ecff;
+      box-shadow: 0 6px 20px rgba(50, 60, 100, 0.15);
+      outline: none;
+      border-color: #4665f6;
+    }
+    .record-item:focus-visible {
+      outline-offset: 2px;
+      outline: 3px solid #4665f6;
+    }
+    .record-date {
+      font-weight: 700;
+      color: #333;
+      flex-shrink: 0;
+    }
+    .record-info {
+      color: #555;
+      margin-left: 12px;
+      white-space: nowrap;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: none;
+      width: 430px;
+      background: #fff;
+      border-top: 1.5px solid #e5e7eb;
+      height: 53px;
+      z-index: 99;
+      display: flex;
+    }
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      padding-top: 6px;
+      color: #000;
+      letter-spacing: -1px;
+      cursor: pointer;
+      text-decoration: none;
+      line-height: 53px;
+      transition: background 0.2s, color 0.2s;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .nav-item.active {
+      color: #000;
+      font-weight: 700;
+      background: #eef2f7;
+    }
+    @media (max-width: 400px) {
+      .container {
+        padding-bottom: 80px;
+      }
+    }
+  </style>
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div class="top-title">
+        길음제 1동 <span class="top-title-arrow">&#9660;</span>
+      </div>
+      <div class="top-profile">
+        <svg viewBox="0 0 24 24" fill="none"
+          ><circle cx="12" cy="8.5" r="4.5" stroke="#444" stroke-width="1.8" />
+          <path d="M5 20c0-3.2 2.8-5 7-5s7 1.8 7 5" stroke="#444" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </div>
+    </div>
+    <div class="chips-row">
+      <a href="dongnelife.html" class="chip">동네생활</a>
+      <a href="dongnesosik.html" class="chip">동네소식</a>
+      <a href="dongnelba.html" class="chip">동네 알바</a>
+      <a href="myrecords.html" class="chip active">나의 기록</a>
+      <a href="friendrecords.html" class="chip">친구기록</a>
+    </div>
+
+    <div class="stats-area">
+      <div class="my-page-title-row">
+        <div>
+          <span class="my-page-title">재필님의 플로깅 통계</span>
+          <span class="my-page-sub">최근 1달간 활동 및 랭킹</span>
+        </div>
+        <a href="stats_detail.html" class="stat-detail-btn" title="상세보기 열기"
+          >상세 보기
+          <svg width="19" height="19" fill="none" stroke="#222" stroke-width="2" viewBox="0 0 20 20">
+            <polyline points="7 5 13 10 7 15" fill="none" stroke="#222" stroke-width="2.2"></polyline>
+          </svg>
+        </a>
+      </div>
+
+      <div class="stat-cards-row">
+        <div class="stat-card">
+          <div class="stat-card-label">총 플로깅 거리</div>
+          <div class="stat-card-value" id="distanceValue">12 km</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">수집한 쓰레기 양</div>
+          <div class="stat-card-value" id="trashValue">5 kg</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">랭킹</div>
+          <div class="stat-card-value" id="rankValue">3위</div>
+        </div>
+      </div>
+
+      <div class="date-selectors">
+        <input type="date" id="datePicker" aria-label="날짜 선택" />
+      </div>
+
+      <div class="map-display" id="mapDisplay">날짜를 선택하세요.</div>
+
+      <div class="records-list" id="recordsList">
+        <!-- 기록 리스트 -->
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav" role="navigation" aria-label="하단 내비게이션 바">
+    <a href="index.html" class="nav-item">홈</a>
+    <a href="stats.html" class="nav-item active">통계</a>
+    <a href="chat.html" class="nav-item">채팅</a>
+    <a href="settings.html" class="nav-item">설정</a>
+  </div>
+
+  <script>
+    const recordData = {
+      "2025-08-11": { distance: "9 km", trash: "2.3 kg", rank: "3위", map: "[지도 2025-08-11]" },
+      "2025-08-18": { distance: "7 km", trash: "1.7 kg", rank: "4위", map: "[지도 2025-08-18]" },
+      "2025-08-25": { distance: "5 km", trash: "1.2 kg", rank: "5위", map: "[지도 2025-08-25]" },
+      "2025-08-26": { distance: "6 km", trash: "1.0 kg", rank: "5위", map: "[지도 2025-08-26]" },
+      "2025-08-27": { distance: "4 km", trash: "0.9 kg", rank: "6위", map: "[지도 2025-08-27]" },
+      "2025-08-28": { distance: "6.5 km", trash: "1.6 kg", rank: "4위", map: "[지도 2025-08-28]" },
+      "2025-08-29": { distance: "7.2 km", trash: "2.1 kg", rank: "3위", map: "[지도 2025-08-29]" },
+      "2025-08-30": { distance: "5.5 km", trash: "1.3 kg", rank: "5위", map: "[지도 2025-08-30]" },
+      "2025-08-31": { distance: "4.8 km", trash: "1.1 kg", rank: "6위", map: "[지도 2025-08-31]" },
+      "2025-09-01": { distance: "3.9 km", trash: "0.8 kg", rank: "7위", map: "[지도 2025-09-01]" }
+    };
+
+    const datePicker = document.getElementById("datePicker");
+    const distanceValue = document.getElementById("distanceValue");
+    const trashValue = document.getElementById("trashValue");
+    const rankValue = document.getElementById("rankValue");
+    const mapDisplay = document.getElementById("mapDisplay");
+    const recordsList = document.getElementById("recordsList");
+
+    // 초기 날짜 세팅
+    const initialDate = Object.keys(recordData)[0];
+    datePicker.value = initialDate;
+
+    function updateStats(dateStr) {
+      if (recordData[dateStr]) {
+        const data = recordData[dateStr];
+        distanceValue.textContent = data.distance;
+        trashValue.textContent = data.trash;
+        rankValue.textContent = data.rank;
+        mapDisplay.textContent = data.map;
+      } else {
+        distanceValue.textContent = "-";
+        trashValue.textContent = "-";
+        rankValue.textContent = "-";
+        mapDisplay.textContent = "선택한 날짜에 대한 데이터가 없습니다.";
+      }
+    }
+
+    datePicker.addEventListener("change", (e) => {
+      updateStats(e.target.value);
+    });
+
+    function renderRecords() {
+      recordsList.innerHTML = "";
+      const maxItems = 10;
+      const recentDates = Object.keys(recordData).slice(-maxItems).reverse();
+
+      recentDates.forEach((date) => {
+        const rec = recordData[date];
+        const div = document.createElement("div");
+        div.className = "record-item";
+        div.setAttribute("tabindex", "0");
+        div.setAttribute("role", "button");
+        div.setAttribute("aria-pressed", "false");
+        div.textContent = `${date} - 거리: ${rec.distance}, 쓰레기: ${rec.trash}, 랭킹: ${rec.rank}`;
+        div.addEventListener("click", () => {
+          datePicker.value = date;
+          updateStats(date);
+        });
+        div.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            datePicker.value = date;
+            updateStats(date);
+          }
+        });
+        recordsList.appendChild(div);
+      });
+    }
+
+    // 최초 데이터 표시 및 레코드 리스트 렌더링
+    updateStats(initialDate);
+    renderRecords();
+  </script>
+</body>
+</html>

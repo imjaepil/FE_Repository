@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>플로깅 홈페이지</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0; background: #f7f8fa;
+      font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif;
+      color: #1a232b;
+      min-width: 360px;
+    }
+    .container {
+      max-width: 430px; min-width: 330px; margin: 0 auto;
+      padding-bottom: 80px;
+    }
+    .header {
+      display: flex; align-items: center;
+      padding: 32px 24px 8px 24px;
+    }
+    .avatar {
+      background: #94a3b8; color:#fff; font-weight:700;
+      font-size: 22px; width: 60px; height: 60px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin-right: 16px;
+    }
+    .profile-area .name {
+      font-weight: 700; font-size: 20px; margin-bottom: 4px;
+    }
+    .profile-area .desc {
+      font-size: 14px; color: #94a3b8;
+    }
+    .toggle-wrap { margin: 0 24px 8px 24px; }
+    .toggle-label { margin-left: 4px; font-size: 14px; margin-bottom: 4px; }
+    .toggle-bar {
+      background: #eef2f7; border-radius: 18px; display: flex; margin-top: 0;
+      padding: 4px; width: 100%; gap: 3px;
+    }
+    .toggle-btn {
+      flex: 1; border: 0; border-radius: 16px; background: transparent;
+      font-size: 16px; font-weight: 600; color: #b3b3b3; padding: 10px 0; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .toggle-btn.active {
+      background: #fff; color: #222; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .toggle-desc {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+      margin-left: 4px;
+      user-select: none;
+    }
+    .card {
+      background: #fff; border-radius: 22px; box-shadow: 0 4px 24px rgba(50,60,100,0.07);
+      margin: 14px 24px 0 24px; padding: 32px 20px;
+    }
+    .card.map {
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #969fae;
+      font-size: 18px;
+    }
+    .section-row {
+      display: flex; flex-direction: column; align-items: flex-start; margin: 18px 24px 0 24px; position: relative;
+    }
+    .section-row .desc-btn {
+      position: absolute;
+      top: 10px;
+      right: 0;
+      color: #111;
+      background: #fff;
+      border: 1.5px solid #222;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 4px 14px 6px 10px;
+      box-shadow: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      outline: none;
+      transition: none;
+      letter-spacing: -1px;
+    }
+    .section-row .desc-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #222;
+      stroke-width: 2.2;
+      display: inline-block;
+      transform: translateY(1px);
+    }
+    .section-row h3 {
+      margin: 0; font-size: 17px; font-weight: 700; display: inline;
+    }
+    .section-row .sub {margin-left: 2px; font-size: 13px; color: #959cab; font-weight: 400;}
+    .stats {
+      display: flex; gap: 16px; margin: 0 24px; margin-top: 13px;
+    }
+    .stats .stat-card {
+      flex: 1; background: #fff; border-radius: 15px; box-shadow: 0 2px 10px rgba(50,60,100,0.05);
+      text-align: center; padding: 14px 0 13px 0;
+    }
+    .stats .label {
+      font-size: 13px; color: #727988;
+    }
+    .stats .value {
+      margin-top: 5px; font-size: 23px; font-weight: 700;
+    }
+    .ranking-card {
+      background: #fff; border-radius: 18px; box-shadow: 0 2px 9px rgba(20,30,60,0.06);
+      margin: 7px 24px 0 24px; padding: 7px 0 3px 0;
+    }
+    .rank-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 21px; border-bottom: 1px dashed #e3e7eb; font-size: 16px; min-height: 32px;
+    }
+    .rank-row:last-child { border-bottom: 0; }
+    .rank-left {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .medal {
+      width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700;
+    }
+    .gold {
+      background: linear-gradient(135deg, #f5b000, #ffdb6d);
+    }
+    .silver {
+      background: linear-gradient(135deg, #bfc0c1, #ececec);
+    }
+    .bronze {
+      background: linear-gradient(135deg, #c89d67, #ecd09b);
+    }
+    .city {
+      font-weight: 600;
+    }
+    .dist {
+      font-size: 13px; color: #959cab; margin-left: 2px;
+    }
+    .rank-id {
+      font-weight: 700; color: #667;
+    }
+    .social-title-row {
+      font-size: 17px;
+      font-weight: 700;
+      margin-left: 24px;
+      margin-top: 30px;
+      margin-bottom: 4px;
+    }
+    .social-desc {
+      color: #a4a7a9;
+      font-size: 13px;
+      margin-left: 24px;
+      margin-bottom: 8px;
+    }
+    .carousel {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+      margin-left: 24px;
+      margin-right: 24px;
+      margin-bottom: 20px;
+    }
+    .social-card {
+      flex: 0 0 205px;
+      min-width: 205px;
+      max-width: 205px;
+      height: 300px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 1px 8px rgba(20,30,60,0.07);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+    .image-area {
+      flex: 1 1 50%;
+      background: #e3e5e7;
+      border-radius: 18px 18px 0 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+    }
+    .social-title {
+      position: absolute;
+      color: #000;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      width: 90%;
+      line-height: 1.4;
+      margin: 0;
+      padding: 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      user-select: none;
+      white-space: pre-line;
+    }
+    .info-area {
+      flex: 1 1 50%;
+      background: #fff;
+      padding: 18px 16px 15px 16px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .social-body {
+      font-size: 14px;
+      color: #222;
+      margin-bottom: 8px;
+    }
+    .tag {
+      display: inline-block;
+      background: white;
+      border: 1.2px solid black;
+      border-radius: 7px;
+      color: #222;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 3px 10px;
+      margin-right: 8px;
+      margin-top: 4px;
+    }
+    .nickname-container {
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+      gap: 8px;
+    }
+    .nickname-circle {
+      width: 18px;
+      height: 18px;
+      background: #a0a2a7;
+      border-radius: 50%;
+    }
+    .nickname-text {
+      color: #808085;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.8px;
+      user-select: none;
+    }
+    .btns {
+      display: grid;
+      gap: 12px;
+      margin: 18px 24px 0 24px;
+    }
+    .main-btn {
+      font-size: 17px;
+      border-radius: 15px;
+      font-weight: 700;
+      border: none;
+      padding: 17px 0;
+      cursor: pointer;
+    }
+    .main-btn.outline {
+      background: #fff;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+      border: 1.5px solid #e5e7eb;
+    }
+    .main-btn.brand {
+      background: #000;
+      color: #fff;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: none;
+      width: 430px;
+      background: #fff;
+      border-top: 1.5px solid #e5e7eb;
+      height: 53px;
+      z-index: 99;
+      display: flex;
+    }
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      padding-top: 6px;
+      color: #000;
+      letter-spacing: -1px;
+      cursor: pointer;
+      text-decoration: none;
+      line-height: 53px;
+      transition: background 0.2s, color 0.2s;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .nav-item.active {
+      color: #000;
+      font-weight: 700;
+      background: #eef2f7;
+    }
+    @media (max-width: 400px) {
+      .container {
+        padding-bottom: 75px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="avatar">그</div>
+      <div class="profile-area">
+        <div class="name">그댄앞에호랑이</div>
+        <div class="desc">당신의 발자국을 남겨보세요!</div>
+      </div>
+    </div>
+    <div class="toggle-wrap">
+      <div class="toggle-label">공개/비공개 선택</div>
+      <div class="toggle-bar">
+        <button class="toggle-btn active" id="pubBtn">공개</button>
+        <button class="toggle-btn" id="privBtn">비공개</button>
+      </div>
+      <div class="toggle-desc">다른 사람들과 경험을 공유할지 선택하세요.</div>
+    </div>
+    <div class="card map">
+      플로깅 한 지역을 지도에 기록하세요.
+    </div>
+    <div class="section-row">
+      <h3>플로깅 통계</h3>
+      <span class="sub">최근 활동 및 랭킹</span>
+      <button class="desc-btn" onclick="location.href='stats_detail.html'">
+        상세 보기
+        <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="7 5 13 10 7 15" fill="none" stroke="#222" stroke-width="2" />
+        </svg>
+      </button>
+    </div>
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">총 플로깅 거리</div>
+        <div class="value">12 km</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">수집한 쓰레기 양</div>
+        <div class="value">5 kg</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">현재</div>
+        <div class="value">3위</div>
+      </div>
+    </div>
+    <div class="section-row" style="margin-bottom:0;">
+      <h3>지역별 랭킹</h3>
+    </div>
+    <div class="ranking-card" id="rankingList"></div>
+    <div class="social-title-row">소셜 경험 공유</div>
+    <div class="social-desc">다른 사람들의 플로깅 경험</div>
+    <div class="carousel" id="socialCarousel"></div>
+    <div class="btns">
+      <button class="main-btn outline" id="myRecordsBtn">내 기록 보기</button>
+      <button class="main-btn outline">랭킹 보기</button>
+      <button class="main-btn brand start">플로깅 시작하기</button>
+    </div>
+  </div>
+  <div class="bottom-nav" role="navigation" aria-label="하단 내비게이션 바">
+    <a href="index.html" class="nav-item active">홈</a>
+    <a href="stats.html" class="nav-item">통계</a>
+    <a href="chat.html" class="nav-item">채팅</a>
+    <a href="settings.html" class="nav-item">설정</a>
+  </div>
+  <script>
+    const pubBtn = document.getElementById('pubBtn');
+    const privBtn = document.getElementById('privBtn');
+    pubBtn.onclick = () => {
+      pubBtn.classList.add('active');
+      privBtn.classList.remove('active');
+    };
+    privBtn.onclick = () => {
+      privBtn.classList.add('active');
+      pubBtn.classList.remove('active');
+    };
+
+    const rankingList = document.getElementById('rankingList');
+    const rankingData = [
+      { city: '제주시', dist: '15.3 km', rank: '1위', medal: 'gold' },
+      { city: '해운대구', dist: '14.8 km', rank: '2위', medal: 'silver' },
+      { city: '강남구', dist: '14.2 km', rank: '3위', medal: 'bronze' }
+    ];
+    rankingData.forEach((it, idx) => {
+      const el = document.createElement('div');
+      el.className = 'rank-row';
+      el.innerHTML = `
+        <span class="rank-left">
+          <span class="medal ${it.medal}">${idx + 1}</span>
+          <span class="city">${it.city}</span>
+          <span class="dist">${it.dist}</span>
+        </span>
+        <span class="rank-id">${it.rank}</span>
+      `;
+      rankingList.appendChild(el);
+    });
+
+    const socialCarousel = document.getElementById('socialCarousel');
+    const socialPosts = [
+      {
+        title: '하늘이 기록한 플로깅',
+        body: '아주 보람찼어요!',
+        tags: ['#사회적책임', '#환경보호'],
+        name: '하늘'
+      },
+      {
+        title: '지민이 플로깅 중',
+        body: '함께하면 배가되는 경험!',
+        tags: ['#함께가요', '#깨끗한바다'],
+        name: '바다'
+      }
+    ];
+    socialPosts.forEach(card => {
+      const c = document.createElement('div');
+      c.className = 'social-card';
+      c.innerHTML = `
+        <div class="image-area" aria-label="플로깅 이미지 자리">
+          <div class="social-title">${card.title}</div>
+        </div>
+        <div class="info-area">
+          <div class="social-body">${card.body}</div>
+          <div>${card.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+          <div class="nickname-container">
+            <div class="nickname-circle"></div>
+            <span class="nickname-text">${card.name}</span>
+          </div>
+        </div>
+      `;
+      socialCarousel.appendChild(c);
+    });
+
+    // "내 기록 보기" 버튼 클릭 시 settings.html로 페이지 이동
+    document.getElementById('myRecordsBtn').addEventListener('click', () => {
+      window.location.href = 'stats.html';
+    });
+
+    // "랭킹 보기" 버튼 클릭 시 ranking.html로 페이지 이동
+    document.querySelector('button.main-btn.outline:nth-of-type(2)').addEventListener('click', () => {
+      window.location.href = 'ranking.html';
+    });
+    // "플로깅 시작하기" 버튼 클릭 시 plogging_start.html로 페이지 이동
+    document.querySelector('button.main-btn.start').addEventListener('click', () => {
+      window.location.href = 'plogging_start.html';
+    });
+
+  </script>
+</body>
+</html>
